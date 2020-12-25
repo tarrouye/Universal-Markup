@@ -16,6 +16,8 @@ struct ToolView: View {
     @State var winMovable = ToolsDefaults.winMovable
     @State var detectLines = ToolsDefaults.detectLines
     
+    @State var hoveringCaptureButton: Bool = false
+    
     func bgOpacityChanged() {
         NotificationCenter.default.post(name: Notification.Name("SetWindowOpacity"), object: nil, userInfo: ["value" : bgOpacity])
     }
@@ -29,11 +31,7 @@ struct ToolView: View {
     }
     
     func penColorChanged() {
-        if #available(OSX 11, *) {
-            NotificationCenter.default.post(name: Notification.Name("SetPenColor"), object: nil, userInfo: ["value" : penColor.cgColor!])
-        } else {
-            // Fallback on earlier versions
-        }
+        NotificationCenter.default.post(name: Notification.Name("SetPenColor"), object: nil, userInfo: ["value" : penColor.cgColor!])
     }
     
     func winPickerChanged() {
@@ -44,101 +42,160 @@ struct ToolView: View {
         NotificationCenter.default.post(name: Notification.Name("SetStraightenLines"), object: nil, userInfo: ["value" : detectLines])
     }
     
+    func selectedDefaultPen(_ pen: Int) {
+        NotificationCenter.default.post(name: Notification.Name("SelectedDefaultPen"), object: nil, userInfo: ["value" : pen])
+        
+        
+        penColor = Color(ToolsDefaults.defaultPens[pen].strokeColor)
+        penSize = ToolsDefaults.defaultPens[pen].strokeWidth
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Controls")
-                .font(.headline)
-                .fontWeight(.bold)
+            // [GROUP] CAPTURE FRAME CONTROLS
+            Group {
+                Text("Capture Frame Controls")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .padding(.bottom)
+                
+                // Background Opacity Slider
+                VStack(alignment: .leading) {
+                    Text("Background Opacity")
+                    
+                    Slider(value: Binding(get: {
+                        self.bgOpacity
+                    }, set: { (newVal) in
+                        self.bgOpacity = newVal
+                        self.bgOpacityChanged()
+                    }), in: 0...1, step: 0.1)
+                }
+                .frame(maxWidth: 300)
                 .padding(.bottom)
-            
-            // Background Opacity Slider
-            VStack(alignment: .leading) {
-                Text("Background Opacity")
-                    .font(.headline)
                 
-                Slider(value: Binding(get: {
-                    self.bgOpacity
+                // Frame Width Slider
+                VStack(alignment: .leading) {
+                    Text("Frame Width")
+                    
+                    Slider(value: Binding(get: {
+                        self.frameThickness
+                    }, set: { (newVal) in
+                        self.frameThickness = newVal
+                        self.frameThicknessChanged()
+                    }), in: 1...20, step: 0.1)
+                }
+                .frame(maxWidth: 300)
+                .padding(.bottom)
+                
+                // Window Movability Toggle
+                Picker(selection: Binding(get: {
+                    self.winMovable
                 }, set: { (newVal) in
-                    self.bgOpacity = newVal
-                    self.bgOpacityChanged()
-                }), in: 0...1, step: 0.1)
+                    self.winMovable = newVal
+                    self.winPickerChanged()
+                }), label: Text("Frame Dragging:")) {
+                    Text("Enabled").tag(true)
+                    Text("Disabled").tag(false)
+                }.pickerStyle(RadioGroupPickerStyle())
+                .padding(.bottom)
             }
-            .frame(maxWidth: 300)
-            .padding(.bottom)
             
-            // Frame Width Slider
-            VStack(alignment: .leading) {
-                Text("Frame Width")
+            Divider()
+            
+            // [GROUP] PEN CONTROLS
+            Group {
+                Text("Pen Controls")
                     .font(.headline)
+                    .fontWeight(.bold)
+                    .padding(.bottom)
                 
-                Slider(value: Binding(get: {
-                    self.frameThickness
-                }, set: { (newVal) in
-                    self.frameThickness = newVal
-                    self.frameThicknessChanged()
-                }), in: 1...20, step: 0.1)
-            }
-            .frame(maxWidth: 300)
-            .padding(.bottom)
-            
-            // Stroke Width Slider
-            VStack(alignment: .leading) {
-                Text("Stroke Width")
-                    .font(.headline)
+                // Stroke Width Slider
+                VStack(alignment: .leading) {
+                    Text("Stroke Width")
+                    
+                    Slider(value: $penSize, in: 1...50, step: 0.1, onEditingChanged: { editing in
+                        if (!editing) {
+                            self.penSizeChanged()
+                        }
+                    })
+                }
+                .frame(maxWidth: 300)
+                .padding(.bottom)
                 
-                Slider(value: $penSize, in: 1...20, step: 0.1, onEditingChanged: { editing in
-                    if (!editing) {
-                        self.penSizeChanged()
-                    }
-                })
-            }
-            .frame(maxWidth: 300)
-            .padding(.bottom)
-            
-            // Stroke color picker
-            if #available(OSX 11.0, *) {
+                // Stroke color picker
                 ColorPicker("Stroke Color", selection: Binding(get: {
                     self.penColor
                 }, set: { (newVal) in
                     self.penColor = newVal
                     self.penColorChanged()
                 }), supportsOpacity: true)
-            } else {
-                // Fallback on earlier versions
+                
+                // Line Detection Toggle
+                Picker(selection: Binding(get: {
+                    self.detectLines
+                }, set: { (newVal) in
+                    self.detectLines = newVal
+                    self.detectLinesChanged()
+                }), label: Text("Auto-Straighten Lines:")) {
+                    Text("Enabled").tag(true)
+                    Text("Disabled").tag(false)
+                }.pickerStyle(RadioGroupPickerStyle())
+                .padding(.bottom)
+                
+                
+                // Default pen options
+                VStack(alignment: .leading) {
+                    Text("Templates")
+                        .font(.headline)
+                    
+                    HStack {
+                        // Pen button
+                        Button(action: {
+                            selectedDefaultPen(0)
+                        }) {
+                            Text("Pen")
+                        }
+                        
+                        // Highlighter button
+                        Button(action: {
+                            selectedDefaultPen(1)
+                        }) {
+                            Text("Highlighter")
+                        }
+                    }
+                }
             }
             
-            // Line Detection Toggle
-            Picker(selection: Binding(get: {
-                self.detectLines
-            }, set: { (newVal) in
-                self.detectLines = newVal
-                self.detectLinesChanged()
-            }), label: Text("Auto-Straighten Lines:")) {
-                Text("Enabled").tag(true)
-                Text("Disabled").tag(false)
-            }.pickerStyle(RadioGroupPickerStyle())
-            .padding(.bottom)
+            Divider()
             
-            // Window Movability Toggle
-            Picker(selection: Binding(get: {
-                self.winMovable
-            }, set: { (newVal) in
-                self.winMovable = newVal
-                self.winPickerChanged()
-            }), label: Text("Frame Dragging:")) {
-                Text("Enabled").tag(true)
-                Text("Disabled").tag(false)
-            }.pickerStyle(RadioGroupPickerStyle())
-            .padding(.bottom)
+            HStack {
+                Spacer()
             
-            
-            // Capture button
-            Button(action: {
-                debugPrint("Capture button clicked!")
-            }) {
+                // Capture button
                 Text("Capture")
+                    .padding()
+                    .background(hoveringCaptureButton ? Color(red: 0.0, green: 0.5, blue: 1.0, opacity: 0.75) : Color.blue)
+                    .foregroundColor(Color.white)
+                    .font(.title2)
+                    .cornerRadius(100)
+                    .padding(5)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 100)
+                            .stroke(hoveringCaptureButton ? Color(red: 0.0, green: 0.5, blue: 1.0, opacity: 0.75) : Color.blue, lineWidth: 5)
+                    )
+                    .onTapGesture {
+                        print("Capture button clicked!")
+                    }
+                    .onHover { isHovered in
+                        self.hoveringCaptureButton = isHovered
+                    }
+                
+                Spacer()
             }
+            .padding()
+            
         }
+        .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

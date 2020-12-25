@@ -48,6 +48,8 @@ class DrawingView: NSView {
         NotificationCenter.default.addObserver(self, selector: #selector(self.setBorderWidth(notif:)), name: Notification.Name("SetFrameThickness"), object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.setStraightenLines(notif:)), name: Notification.Name("SetStraightenLines"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.selectedDefaultPen(notif:)), name: Notification.Name("SelectedDefaultPen"), object: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -129,6 +131,17 @@ class DrawingView: NSView {
         //debugPrint("Got notification that straighten lines was set \(val) \(type(of: val))")
         
         self.autoStraightenLines = val
+    }
+    
+    // callback for SelectedDefaultPen notifcation
+    // sets multiple stroke properties based on passed value
+    @objc func selectedDefaultPen(notif: NSNotification) {
+        guard let val = notif.userInfo?["value"] as? Int else {
+            return
+        }
+        
+        strokeWidth = ToolsDefaults.defaultPens[val].strokeWidth
+        strokeColor = ToolsDefaults.defaultPens[val].strokeColor
     }
     
     func removeBrushStroke(_ id: Int) {
