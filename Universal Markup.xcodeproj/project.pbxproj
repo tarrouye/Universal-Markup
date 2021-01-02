@@ -11,7 +11,6 @@
 		31B8FB3B258C23FD001236CA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31B8FB3A258C23FD001236CA /* Assets.xcassets */; };
 		31B8FB3E258C23FD001236CA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31B8FB3D258C23FD001236CA /* Preview Assets.xcassets */; };
 		31B8FB4C25932147001236CA /* ToolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B8FB4B25932147001236CA /* ToolView.swift */; };
-		31B8FB4F25932165001236CA /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B8FB4E25932165001236CA /* WindowManager.swift */; };
 		31B8FB53259324C4001236CA /* ParentWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B8FB52259324C4001236CA /* ParentWindowController.swift */; };
 		31B8FB5625932F47001236CA /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B8FB5525932F47001236CA /* DrawingView.swift */; };
 		31B8FB5A259364B5001236CA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 31B8FB58259364B5001236CA /* Main.storyboard */; };
@@ -26,7 +25,6 @@
 		31B8FB42258C23FD001236CA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		31B8FB43258C23FD001236CA /* Universal_Markup.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Universal_Markup.entitlements; sourceTree = "<group>"; };
 		31B8FB4B25932147001236CA /* ToolView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolView.swift; sourceTree = "<group>"; };
-		31B8FB4E25932165001236CA /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		31B8FB52259324C4001236CA /* ParentWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentWindowController.swift; sourceTree = "<group>"; };
 		31B8FB5525932F47001236CA /* DrawingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
 		31B8FB59259364B5001236CA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = "Universal Markup/Base.lproj/Main.storyboard"; sourceTree = "<group>"; };
@@ -68,7 +66,6 @@
 				31B8FB5525932F47001236CA /* DrawingView.swift */,
 				31B8FB4B25932147001236CA /* ToolView.swift */,
 				31B8FB7F2595DEFA001236CA /* ToolsDefaults.swift */,
-				31B8FB4E25932165001236CA /* WindowManager.swift */,
 				31B8FB3A258C23FD001236CA /* Assets.xcassets */,
 				31B8FB42258C23FD001236CA /* Info.plist */,
 				31B8FB43258C23FD001236CA /* Universal_Markup.entitlements */,
@@ -157,7 +154,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				31B8FB802595DEFA001236CA /* ToolsDefaults.swift in Sources */,
-				31B8FB4F25932165001236CA /* WindowManager.swift in Sources */,
 				31B8FB5625932F47001236CA /* DrawingView.swift in Sources */,
 				31B8FB4C25932147001236CA /* ToolView.swift in Sources */,
 				31B8FB37258C23F9001236CA /* AppDelegate.swift in Sources */,
